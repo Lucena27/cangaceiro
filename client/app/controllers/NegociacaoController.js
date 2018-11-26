@@ -61,13 +61,15 @@ class NegociacaoController {
     }
 
     importaNegociacoes(){
-       this._service.obtemNegociacoesDaSemana()
-       .then(
-           negociacoes => {
-               negociacoes.forEach(negociacao => this._negociacoes.adiciona(negociacao));
-               this._mensagem.texto = 'Negociações importadas com sucesso';
-           },
-           err => this._mensagem.texto = err
-       );
-    }    
+        this._service
+            .obtemNegociacoesDoPeriodo()
+            .then(negociacoes => {
+            negociacoes
+            .filter(novaNegociacao => !this._negociacoes.paraArray().some(negociacaoExistente =>
+                novaNegociacao.equals(negociacaoExistente)))
+            .forEach(negociacao => this._negociacoes.adiciona(negociacao));
+        this._mensagem.texto = 'Negociações do período importadas com sucesso';
+            })
+            .catch(err => this._mensagem.texto = err);
+    }
 }
